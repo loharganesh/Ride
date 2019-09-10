@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Auth.Register">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/login_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="35dp">
+
+            <ImageView
+                android:id="@+id/imageView7"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/ic_male_avatar" />
+
+            <EditText
+                android:id="@+id/nameFeild"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:ems="10"
+                android:hint="Full name"
+                android:inputType="textPersonName"
+                android:padding="15dp"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/emailFeild"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:hint="Email "
+                android:inputType="textEmailAddress"
+                android:padding="15dp"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/passwordFeild"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="15dp"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:background="@color/white"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center" />
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center"
+    tools:context=".WelcomeScreen">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="100dp"
+        android:src="@drawable/illustration_biking"
+        android:tint="#7EFFFFFF" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="35dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginLeft="-30dp"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/ic_rideappicon" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="100dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Get\nquick ride\nfrom people"
+            android:textColor="@color/black"
+            android:textSize="26sp" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/main_button_design_filled"
+            android:fontFamily="@font/poppins_medium"
+            android:onClick="login"
+            android:stateListAnimator="@null"
+            android:text="Log in"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/poppins_medium"
+            android:gravity="center"
+            android:onClick="createAc"
+            android:padding="15dp"
+            android:text="Create new account" />
+    </LinearLayout>
+
+</RelativeLayout>

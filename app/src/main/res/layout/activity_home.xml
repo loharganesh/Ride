@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Home">
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="100dp"
+        android:src="@drawable/illustration_biking"
+        android:tint="#7EFFFFFF" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="35dp">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="100dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="Choose\nyour role"
+            android:textColor="@color/black"
+            android:textSize="32sp" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp" >
+
+            <RadioButton
+                android:id="@+id/radioButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:text="I want ride" />
+
+            <RadioButton
+                android:id="@+id/radioButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:text="I want to drive" />
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="25dp"
+            android:background="@drawable/main_button_design_filled"
+            android:fontFamily="@font/poppins_medium"
+            android:onClick="continueBtn"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:stateListAnimator="@null"
+            android:text="Continue"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+</RelativeLayout>

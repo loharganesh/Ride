@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:elevation="0dp"
+    android:gravity="center"
+    app:layout_scrollFlags="scroll|enterAlways"
+    android:paddingRight="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/toolbarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Ride"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/loginBtn"
+            android:layout_width="100dp"
+            android:layout_height="35dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/main_button_design_filled"
+            android:fontFamily="@font/poppins_medium"
+            android:stateListAnimator="@null"
+            android:text="Log in"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+
+
+</androidx.appcompat.widget.Toolbar>

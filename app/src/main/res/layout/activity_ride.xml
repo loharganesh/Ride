@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Ride">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            android:background="@drawable/activity_border"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingLeft="15dp"
+                android:paddingTop="5dp"
+                android:paddingRight="15dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_marginTop="3dp"
+                        app:srcCompat="@drawable/ic_origin" />
+
+                    <ImageView
+                        android:id="@+id/imageView5"
+                        android:layout_width="2dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:scaleType="center"
+                        app:srcCompat="@drawable/ic_dashedline" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="From"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins"
+                        android:text="Pune Institute of computer technology"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginLeft="45dp"
+                android:layout_marginTop="10dp"
+                android:background="#C9C9C9"
+                android:orientation="vertical"></LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="15dp"
+                android:paddingTop="5dp"
+                android:paddingRight="15dp"
+                android:paddingBottom="5dp">
+
+                <ImageView
+                    android:id="@+id/imageVie"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginTop="3dp"
+                    app:srcCompat="@drawable/ic_map_point" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="To "
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins"
+                        android:text="Sinhagad College of engineering"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/rideBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_gravity="right"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/main_button_design_filled_dark"
+            android:fontFamily="@font/poppins_medium"
+            android:onClick="onRequest"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:stateListAnimator="@null"
+            android:text="Request for ride"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"></LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/reqLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/activity_border"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
+
+                    <ImageView
+                        android:id="@+id/imageView6"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        app:srcCompat="@drawable/ic_male_avatar" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="15dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView7"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Ganesh Lohar"
+                            android:textColor="@color/black" />
+
+                        <TextView
+                            android:id="@+id/textView8"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Maruti Suzuki Swift Dezire" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/textView10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="35 Rs."
+                        android:textColor="@color/black"
+                        android:textSize="18sp" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/prompt_semibold"
+                android:gravity="center"
+                android:text="MH 19 J 2356"
+                android:textSize="28sp" />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="right"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/main_button_design_filled"
+                android:fontFamily="@font/poppins_medium"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:stateListAnimator="@null"
+                android:text="View on map"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>
