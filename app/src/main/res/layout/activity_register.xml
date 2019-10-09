@@ -62,6 +62,7 @@
                 android:inputType="textPassword"
                 android:padding="15dp"
                 android:textSize="14sp" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -1,8 +1,10 @@
 package app.ride.Auth;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +12,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,16 +25,22 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+
+import java.util.HashMap;
+import java.util.Map;
 
 import app.ride.Home;
 import app.ride.R;
 
 public class Register extends AppCompatActivity {
 
-    private EditText email,name,password;
+    private EditText emailInp,name,passwordInp,licenseInp;
     private Button loginBtn;
     private FirebaseAuth mAuth;
     private LinearLayout progressBar;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +57,13 @@ public class Register extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        email = findViewById(R.id.emailFeild);
+        db = FirebaseFirestore.getInstance();
+
+        emailInp = findViewById(R.id.emailFeild);
         name = findViewById(R.id.nameFeild);
-        password = findViewById(R.id.passwordFeild);
+        passwordInp = findViewById(R.id.passwordFeild);
+        //licenseInp = findViewById(R.id.license_no);
+
 
         loginBtn = findViewById(R.id.loginBtn);
 
@@ -60,7 +75,7 @@ public class Register extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createAccount(email.getText().toString(),password.getText().toString());
+                createAccount(emailInp.getText().toString(),passwordInp.getText().toString());
             }
         });
 
@@ -68,7 +83,7 @@ public class Register extends AppCompatActivity {
     }
 
 
-    private void createAccount(String email, String password) {
+    private void createAccount(final String email, String password) {
         if (!validateForm()) {
             return;
         }
@@ -83,11 +98,37 @@ public class Register extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
+                            final FirebaseUser user = mAuth.getCurrentUser();
 
-                            //INSERT NAME EMAIL AND PASSWORD IN MYSQL
+                            Map<String,Object> usr = new HashMap<>();
+                            usr.put("name",name.getText().toString());
+                            usr.put("email",emailInp.getText().toString());
+                            usr.put("password",emailInp.getText().toString());
 
-                              updateUI(user);
+                            final Map<String,Object> status = new HashMap<>();
+                            status.put("busy",false);
+                            status.put("status","user");
+
+                            db.collection("users").document(user.getUid())
+                                    .set(usr)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            db.collection("status").document(mAuth.getCurrentUser().getUid()).set(status)
+                                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                            if(task.isSuccessful()){
+                                                                updateUI(mAuth.getCurrentUser());
+                                                            }else{
+
+                                                            }
+                                                        }
+                                                    });
+                                            updateUI(user);
+                                        }
+                                    });
+
                         } else {
                             // If sign in fails, display a message to the user.
                             updateUI(null);
@@ -104,20 +145,19 @@ public class Register extends AppCompatActivity {
         // [END create_user_with_email]
     }
 
-
     //FORM VALIDATION
     private boolean validateForm() {
         boolean valid = true;
 
-        String emailstr = email.getText().toString();
+        String emailstr = emailInp.getText().toString();
         if (TextUtils.isEmpty(emailstr)) {
-            email.setError("Enter Email");
+            emailInp.setError("Enter Email");
             valid = false;
         }else if (!isValidEmail(emailstr)) {
-            email.setError("Enter Valid Email");
+            emailInp.setError("Enter Valid Email");
             valid = false;
         }else {
-            email.setError(null);
+            emailInp.setError(null);
         }
 
         String namestr = name.getText().toString();
@@ -128,15 +168,15 @@ public class Register extends AppCompatActivity {
             name.setError(null);
         }
 
-        String passwordstr = password.getText().toString();
+        String passwordstr = passwordInp.getText().toString();
         if (TextUtils.isEmpty(passwordstr)) {
-            password.setError("Set Password");
+            passwordInp.setError("Set Password");
             valid = false;
-        }else if(password.length()<5){
-            password.setError("Password should at least 6 characters");
+        }else if(passwordInp.length()<5){
+            passwordInp.setError("Password should at least 6 characters");
             valid = false;
         } else {
-            password.setError(null);
+            passwordInp.setError(null);
         }
 
         return valid;
@@ -148,8 +188,8 @@ public class Register extends AppCompatActivity {
 
     //UI CONTROL METHODS
     public void setFeildsEnable(boolean val){
-        password.setEnabled(val);
-        email.setEnabled(val);
+        passwordInp.setEnabled(val);
+        emailInp.setEnabled(val);
         name.setEnabled(val);
         loginBtn.setEnabled(val);
     }
@@ -166,6 +206,26 @@ public class Register extends AppCompatActivity {
 
         }
     }
+
+    /*public boolean IsValid(String text){
+
+        String pattern = "^(?<intro>[A-Z]{2})(?<numeric>\\d{2})(?<year>\\d{4})(?<tail>\\d{7})$";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(text);
+        if(m.matches())
+        {
+            System.out.println("Validated");
+            return true;
+        }
+        else
+        {
+            System.out.println("Not Validated");
+            return false;
+
+        }
+
+
+    }*/
 
 
 }

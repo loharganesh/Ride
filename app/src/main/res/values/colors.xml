@@ -6,5 +6,6 @@
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="demo_picker">#CFCFCF</color>
 
 </resources>

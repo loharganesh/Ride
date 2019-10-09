@@ -47,7 +47,6 @@
     <path android:fillColor="#3f3d56" android:pathData="M832,562.445m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
     <path android:fillColor="#3f3d56" android:pathData="M855,594.445m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
     <path android:fillColor="#3f3d56" android:pathData="M750,412.445m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0"/>
-    <path android:fillColor="#2f2e41" android:pathData="M0,651.445h903v2h-903z"/>
     <path android:fillColor="#f2f2f2" android:pathData="M70.065,395.372l84.87,49l-49,84.87l-84.87,-49z"/>
     <path android:fillColor="#3f3d56" android:pathData="M108,546.307a22,22 0,1 1,22 -22A22.025,22.025 0,0 1,108 546.307ZM108,504.307a20,20 0,1 0,20 20A20.022,20.022 0,0 0,108 504.307Z"/>
 </vector>

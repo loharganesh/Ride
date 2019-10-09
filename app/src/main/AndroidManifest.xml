@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="app.ride">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,27 +13,47 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Auth.Register"></activity>
-        <activity android:name=".Ride" />
+        <activity android:name=".RecentActivities"></activity>
+        <activity android:name=".ManageRide" />
+        <activity android:name=".RideRequests" />
+        <activity
+            android:name=".ManageDrive"
+            android:parentActivityName=".Drive" />
+        <activity android:name=".SelectVehicle" />
+        <activity android:name=".AddVehicle" />
+        <activity android:name=".SelectLocation" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCouGV-C2eaSYM9AlwRr3Q8fsArIkyTV1c" />
+
+        <activity
+            android:name=".Ride"
+            android:theme="@style/SignUpTheme" />
+        <activity android:name=".Auth.Register" />
+        <activity
+            android:name=".Drive"
+            android:theme="@style/SignUpTheme" />
         <activity android:name=".Home" />
         <activity android:name=".Auth.Login" />
-        <activity android:name=".WelcomeScreen">
-
-        </activity>
+        <activity android:name=".WelcomeScreen" />
         <activity android:name=".MainActivity" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name=".SplashScreen">
+        <activity
+            android:name=".SplashScreen"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".Auth.SignIn"
+            android:theme="@style/SignUpTheme"/>
     </application>
 
 </manifest>
