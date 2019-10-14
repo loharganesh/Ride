@@ -27,7 +27,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="15dp">
 
@@ -72,19 +72,37 @@
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="right"
                         android:numStars="5"
                         android:progressBackgroundTint="#CFCFCF"
                         android:progressTint="#000000"
                         android:stepSize="1" />
 
-                    <TextView
-                        android:id="@+id/fareAmount"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:text="0 Rs."
-                        android:textColor="@color/black"
-                        android:textSize="18sp" />
+                        android:layout_marginTop="5dp"
+                        android:gravity="right|center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/totalSeats"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Seats |"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/fareAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:text="0 Rs."
+                            android:textColor="@color/black"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
             </LinearLayout>
@@ -114,6 +132,7 @@
                 android:layout_gravity="right"
                 android:layout_weight="1"
                 android:background="@drawable/main_button_design_filled_dark"
+                android:enabled="false"
                 android:fontFamily="@font/poppins_medium"
                 android:paddingLeft="30dp"
                 android:paddingRight="30dp"

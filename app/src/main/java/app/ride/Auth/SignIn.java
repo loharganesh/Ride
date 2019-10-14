@@ -93,9 +93,9 @@ public class SignIn extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = auth.getCurrentUser();
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             isUserExists(user.getUid());
-                            FirebaseFirestore.getInstance().collection("users")
+                            db.collection("users")
                                     .document(auth.getCurrentUser().getUid()).update("image",acct.getPhotoUrl().toString());
                             //updateUI(user);
                         } else {
@@ -163,7 +163,7 @@ public class SignIn extends AppCompatActivity {
             Map<String,Object> usr = new HashMap<>();
             usr.put("name",user.getDisplayName());
             usr.put("email",user.getEmail());
-            usr.put("phone",user.getPhoneNumber());
+            usr.put("phone","");
             usr.put("drive_rating",0);
             usr.put("image",user.getPhotoUrl().toString());
 
@@ -181,34 +181,33 @@ public class SignIn extends AppCompatActivity {
             editor.putBoolean("busy",false);
             editor.commit();
 
-            db.collection("users").document(user.getUid())
+            db.collection("users").document(curruntUser.getUid())
                 .set(usr)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        db.collection("status").document(auth.getCurrentUser().getUid()).set(status)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        updateUI(user);
-                                    }else{
+                    db.collection("status").document(auth.getCurrentUser().getUid()).set(status)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if(task.isSuccessful()){
+                                    updateUI(user);
+                                }else{
 
-                                    }
                                 }
-                            });
+                            }
+                        });
                     }
                 });
         }
     }
 
     public void isUserExists(String uid){
-        FirebaseFirestore.getInstance().collection("User").document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        FirebaseFirestore.getInstance().collection("users").document(uid).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
+                    if (task.getResult().exists()) {
                         updateUI(auth.getCurrentUser());
                     } else {
                         uploadUserInfo(auth.getCurrentUser());

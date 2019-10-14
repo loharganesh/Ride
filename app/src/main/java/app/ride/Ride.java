@@ -1,22 +1,16 @@
 package app.ride;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.SnapHelper;
-
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
@@ -29,17 +23,23 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.PagerSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -59,36 +59,22 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.maps.android.SphericalUtil;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import app.ride.DirectionHelpers.FetchURL;
-import app.ride.DirectionHelpers.TaskLoadedCallback;
 import app.ride.Model.Driver;
-import app.ride.Model.Requests;
-import app.ride.Model.Vehicle;
-import app.ride.Parser.DataParser;
 import app.ride.View.DriversAdapter;
 
 import static app.ride.Constants.MAP_BUNDLE_KEY;
 import static app.ride.Constants.createCustomMarker;
-import static app.ride.Constants.getMarkerIconFromDrawable;
+import static app.ride.Constants.getRoomId;
 
-public class Ride extends AppCompatActivity implements OnMapReadyCallback{
+public class Ride extends AppCompatActivity implements OnMapReadyCallback {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -99,10 +85,10 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
     private MapView mapView;
 
     private String location_link = "";
-    private GeoPoint from_location,to_location;
+    private GeoPoint from_location, to_location;
     private SharedPreferences location;
-    private ProgressBar progressBar,progressBarRide;
-    private LinearLayout waitingForConfirmation,listsLayout;
+    private ProgressBar progressBar, progressBarRide;
+    private LinearLayout waitingForConfirmation, listsLayout,rideCompleteLayout;
     private LinearLayout ratingLayout;
     private RatingBar ratingBar;
     private TextView messageTxt;
@@ -110,7 +96,7 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
     private String requested_to;
     private List<Marker> markers = new ArrayList<>();
 
-    private TextView ridingWithName,ridingVehicleName,ridingVehicleNumber;
+    private TextView ridingWithName, ridingVehicleName, ridingVehicleNumber;
     private LinearLayout ridingLayout;
     private Button manageRideBtn;
 
@@ -120,6 +106,8 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
     private Polyline currentPolyline;
     private String rateforid;
     private String rate_key;
+
+    private ProgressBar callingProgressBar;
 
     private ImageView callBtn;
 
@@ -142,6 +130,8 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
 
         callBtn = findViewById(R.id.callBtn);
 
+        callingProgressBar = findViewById(R.id.callingProgressBar);
+
         getRatingStatus();
 
         getRideDetails();
@@ -152,6 +142,7 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
         ridingVehicleNumber = findViewById(R.id.ridingVehicleNumber);
         manageRideBtn = findViewById(R.id.rideActBtn);
 
+        rideCompleteLayout = findViewById(R.id.rideCompleteLayout);
 
         mapView = findViewById(R.id.mapView2);
         initMap(savedInstanceState);
@@ -168,65 +159,59 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
 
         setLayouts();
 
-        callBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:8329470687"));
-                startActivity(intent);
-            }
-        });
+
 
 
     }
 
-    public void showRideActivity(View view){
-        startActivity(new Intent(Ride.this,ManageRide.class).putExtra("driver_key",requested_to));
+    public void showRideActivity(View view) {
+        startActivity(new Intent(Ride.this, ManageRide.class).putExtra("driver_key", requested_to));
     }
 
 
-    public void rateDriver(View view){
-        if(ratingBar.getRating() > 0){
-            db.collection("completedrive").document(rateforid).collection("completedrive").document(rate_key).update("rating",ratingBar.getRating());
+
+    public void rateDriver(View view) {
+        if (ratingBar.getRating() > 0) {
+            db.collection("completedrive").document(rateforid).collection("completedrive").document(rate_key).update("rating", ratingBar.getRating());
             //db.collection("completedrides").document(auth.getCurrentUser().getUid()).collection("completedrides").document(rateforid).update("rating",ratingBar.getRating());
 
-            Toast.makeText(this, ""+rateforid, Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "" + rateforid, Toast.LENGTH_SHORT).show();
 
             db.collection("completedrive").document(rateforid).collection("completedrive")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(!task.getResult().isEmpty()){
-                            int total_rating = 0;
-                            int no_of_rides = 0;
-                            for(DocumentSnapshot snapshot:task.getResult()){
-                                no_of_rides++;
-                                long temp = snapshot.getLong("rating");
-                                total_rating = total_rating+(int)temp;
-                                //Toast.makeText(Ride.this, "Rating : "+snapshot.getLong("rating"), Toast.LENGTH_SHORT).show();;
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (!task.getResult().isEmpty()) {
+                                int total_rating = 0;
+                                int no_of_rides = 0;
+                                for (DocumentSnapshot snapshot : task.getResult()) {
+                                    no_of_rides++;
+                                    long temp = snapshot.getLong("rating");
+                                    total_rating = total_rating + (int) temp;
+                                    //Toast.makeText(Ride.this, "Rating : "+snapshot.getLong("rating"), Toast.LENGTH_SHORT).show();;
+                                }
+                                int average = total_rating / no_of_rides;
+                                //Toast.makeText(Ride.this, "No. of Rides : "+no_of_rides, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(Ride.this, "Average Rating : "+average, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(Ride.this, "" + rateforid, Toast.LENGTH_SHORT).show();
+                                db.collection("users").document(rateforid).update("drive_rating", average)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                db.collection("rating").document(auth.getCurrentUser().getUid()).update("rated", true, "rate_for", "", "rate_for_name", "");
+                                            }
+                                        });
                             }
-                            int average = total_rating/no_of_rides;
-                            //Toast.makeText(Ride.this, "No. of Rides : "+no_of_rides, Toast.LENGTH_SHORT).show();
-                            //Toast.makeText(Ride.this, "Average Rating : "+average, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(Ride.this, ""+rateforid, Toast.LENGTH_SHORT).show();
-                            db.collection("users").document(rateforid).update("drive_rating",average)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            db.collection("rating").document(auth.getCurrentUser().getUid()).update("rated",true,"rate_for","","rate_for_name","");
-                                        }
-                                    });
                         }
-                    }
-                });
+                    });
 
-        }else{
+        } else {
             Toast.makeText(this, "Rate Driver", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void getRatingStatus(){
+    public void getRatingStatus() {
         db.collection("rating").document(auth.getCurrentUser().getUid())
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -238,10 +223,11 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
                         rateforid = rate_for_id;
                         rate_key = documentSnapshot.getString("rate_key");
 
-                        if(!rated){
+                        if (!rated) {
                             ratingLayout.setVisibility(View.VISIBLE);
-                            messageTxt.setText(Html.fromHtml("How was your ride with <b><u>"+username));
-                        }else{
+                            rideCompleteLayout.setVisibility(View.GONE);
+                            messageTxt.setText(Html.fromHtml("How was your ride with <b><u>" + username));
+                        } else {
                             ratingLayout.setVisibility(View.GONE);
                         }
 
@@ -249,24 +235,35 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
                 });
     }
 
-    public void getDrivers(final String route){
+    public void getDrivers(final String route) {
         db.collection("drivers").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-                driversList.clear();
-                for(DocumentSnapshot snap:queryDocumentSnapshots.getDocuments()){
-                    Driver req = snap.toObject(Driver.class);
+                if(!queryDocumentSnapshots.isEmpty()){
+                    driversList.clear();
+                    for (DocumentSnapshot snap : queryDocumentSnapshots.getDocuments()) {
+                        Driver req = snap.toObject(Driver.class);
 
-                    if(req.getDrive_route_link().equals(route)){
-                        driversList.add(req);
+                        if (req.getDrive_route_link().equals(route) && !req.isBusy()) {
+                            driversList.add(req);
+                        }
                     }
+                }else{
+                    Snackbar snackbar = Snackbar
+                            .make(driversRecyclerView, "No rides available", Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 }
                 driverAdapter.notifyDataSetChanged();
             }
         });
     }
 
-    public void initMap(Bundle savedInstance){
+    public RecyclerView getList()
+    {
+        return this.driversRecyclerView;
+    }
+
+    public void initMap(Bundle savedInstance) {
         Bundle mapViewBundle = null;
         if (savedInstance != null) {
             mapViewBundle = savedInstance.getBundle(MAP_BUNDLE_KEY);
@@ -275,7 +272,7 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
         mapView.getMapAsync(this);
     }
 
-    public void loadDrivers(){
+    public void loadDrivers() {
 
     }
 
@@ -284,8 +281,8 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
         this.map = googleMap;
 
         //routeUrl = getDirectionsUrl(origin,destination);
-        LatLng origin = new LatLng(from_location.getLatitude(),from_location.getLongitude());
-        LatLng destination = new LatLng(to_location.getLatitude(),to_location.getLongitude());
+        LatLng origin = new LatLng(from_location.getLatitude(), from_location.getLongitude());
+        LatLng destination = new LatLng(to_location.getLatitude(), to_location.getLongitude());
         //SETTING CUSTOM THEME TO MAP
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -306,11 +303,11 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
 
         MarkerOptions origin_marker = new MarkerOptions();
         origin_marker.position(origin);
-        origin_marker.icon(BitmapDescriptorFactory.fromBitmap(createCustomMarker(Ride.this,"◯  "+from_location_name)));
+        origin_marker.icon(BitmapDescriptorFactory.fromBitmap(createCustomMarker(Ride.this, "◯  " + from_location_name)));
 
         MarkerOptions destination_marker = new MarkerOptions();
         destination_marker.position(destination);
-        destination_marker.icon(BitmapDescriptorFactory.fromBitmap(createCustomMarker(Ride.this,"☐  "+to_location_name)));
+        destination_marker.icon(BitmapDescriptorFactory.fromBitmap(createCustomMarker(Ride.this, "☐  " + to_location_name)));
 
         Geocoder geocoder;
         geocoder = new Geocoder(this, Locale.getDefault());
@@ -329,25 +326,21 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
         }
 
 
-
-
-
         map.addMarker(origin_marker);
         map.addMarker(destination_marker);
 
         Polyline line = map.addPolyline(new PolylineOptions()
-                .add(origin,destination)
+                .add(origin, destination)
                 .width(5)
                 .color(Color.LTGRAY));
 
-        showCurvedPolyline(origin,destination,3);
-
+        showCurvedPolyline(origin, destination, 3);
 
 
         //move map camera
         //map.moveCamera(CameraUpdateFactory.newLatLng(origin));
         //map.animateCamera(CameraUpdateFactory.zoomTo(13));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(origin,10));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(origin, 10));
 
     }
 
@@ -355,6 +348,7 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
     protected void onResume() {
         super.onResume();
         mapView.onResume();
+        callingProgressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -368,38 +362,41 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
         super.onStop();
         mapView.onStop();
     }
+
     @Override
     protected void onPause() {
         mapView.onPause();
         super.onPause();
     }
+
     @Override
     protected void onDestroy() {
         mapView.onDestroy();
         super.onDestroy();
     }
+
     @Override
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
     }
 
-    public void showRideHistory(View view){
-        startActivity(new Intent(Ride.this,RecentActivities.class));
+    public void showRideHistory(View view) {
+        startActivity(new Intent(Ride.this, RecentActivities.class));
     }
 
 
-    private void showCurvedPolyline (LatLng p1, LatLng p2, double k) {
+    private void showCurvedPolyline(LatLng p1, LatLng p2, double k) {
         //Calculate distance and heading between two points
-        double d = SphericalUtil.computeDistanceBetween(p1,p2);
+        double d = SphericalUtil.computeDistanceBetween(p1, p2);
         double h = SphericalUtil.computeHeading(p1, p2);
 
         //Midpoint position
-        LatLng p = SphericalUtil.computeOffset(p1, d*0.5, h);
+        LatLng p = SphericalUtil.computeOffset(p1, d * 0.5, h);
 
         //Apply some mathematics to calculate position of the circle center
-        double x = (1-k*k)*d*0.5/(2*k);
-        double r = (1+k*k)*d*0.5/(2*k);
+        double x = (1 - k * k) * d * 0.5 / (2 * k);
+        double r = (1 + k * k) * d * 0.5 / (2 * k);
 
         LatLng c = SphericalUtil.computeOffset(p, x, h + 90.0);
 
@@ -413,9 +410,9 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
 
         //Calculate positions of points on circle border and add them to polyline options
         int numpoints = 100;
-        double step = (h2 -h1) / numpoints;
+        double step = (h2 - h1) / numpoints;
 
-        for (int i=0; i < numpoints; i++) {
+        for (int i = 0; i < numpoints; i++) {
             LatLng pi = SphericalUtil.computeOffset(c, r, h1 + i * step);
             options.add(pi);
         }
@@ -424,51 +421,51 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
         map.addPolyline(options.width(5).color(Color.BLACK).geodesic(false).pattern(pattern));
     }
 
-    public void getRideDetails(){
+    public void getRideDetails() {
 
         location = getSharedPreferences("location",
                 Context.MODE_PRIVATE);
 
-        from_location = new GeoPoint(Double.parseDouble(location.getString("from_loc_lat","default")),Double.parseDouble(location.getString("from_loc_long","default")));
-        to_location = new GeoPoint(Double.parseDouble(location.getString("to_loc_lat","default")),Double.parseDouble(location.getString("to_loc_long","default")));
+        from_location = new GeoPoint(Double.parseDouble(location.getString("from_loc_lat", "default")), Double.parseDouble(location.getString("from_loc_long", "default")));
+        to_location = new GeoPoint(Double.parseDouble(location.getString("to_loc_lat", "default")), Double.parseDouble(location.getString("to_loc_long", "default")));
 
-        from_location_name = location.getString("origin","");
-        to_location_name = location.getString("destination","");
+        from_location_name = location.getString("origin", "");
+        to_location_name = location.getString("destination", "");
 
         db.collection("riders").document(auth.getCurrentUser().getUid())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if(task.getResult().exists()){
+                        if (task.getResult().exists()) {
                             getDrivers(task.getResult().getString("ride_route_link"));
                         }
                     }
                 });
     }
 
-    public void cancelRide(View view){
+    public void cancelRide(View view) {
         progressBar.setVisibility(View.VISIBLE);
         db.collection("riders").document(auth.getCurrentUser().getUid()).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
                 db.collection("status").document(auth.getCurrentUser().getUid())
-                        .update("role","user","busy",false)
+                        .update("role", "user", "busy", false)
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 SharedPreferences geoPoints = getApplicationContext().getSharedPreferences("location", Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor = geoPoints.edit();
-                                editor.putString("from_loc_lat",""+"");
-                                editor.putString("from_loc_long",""+"");
-                                editor.putString("to_loc_lat",""+"");
-                                editor.putString("to_loc_long",""+"");
-                                editor.putString("role","user");
-                                editor.putBoolean("busy",false);
+                                editor.putString("from_loc_lat", "" + "");
+                                editor.putString("from_loc_long", "" + "");
+                                editor.putString("to_loc_lat", "" + "");
+                                editor.putString("to_loc_long", "" + "");
+                                editor.putString("role", "user");
+                                editor.putBoolean("busy", false);
                                 editor.commit();
 
-                                try{
+                                try {
                                     db.collection("riderequests").document(requested_to).collection("riderequests")
                                             .document(auth.getCurrentUser().getUid()).delete()
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -478,21 +475,20 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
                                                 }
                                             });
 
-                                    try{
-                                        db.collection("drivers").document(requested_to).update("drive_status","not_driving","drive_for","");
-                                    }catch (Exception e){
+                                    try {
+                                        db.collection("drivers").document(requested_to).update("drive_status", "not_driving", "drive_for", "");
+                                    } catch (Exception e) {
 
                                     }
-                                }catch (Exception e){
+                                } catch (Exception e) {
 
                                 }
 
 
-
                                 FirebaseFirestore.getInstance().collection("riders").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                        .update("ride_status","not_riding","ride_with","");
+                                        .update("ride_status", "not_riding", "ride_with", "");
 
-                                Intent intent = new Intent(getApplicationContext(),SplashScreen.class);
+                                Intent intent = new Intent(getApplicationContext(), SplashScreen.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
@@ -511,7 +507,7 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
     }
 
 
-    public void onCancelRide(View view){
+    public void onCancelRide(View view) {
 
         db.collection("riderequests").document(requested_to).collection("riderequests")
                 .document(auth.getCurrentUser().getUid()).delete()
@@ -519,7 +515,7 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         FirebaseFirestore.getInstance().collection("riders").document(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                .update("ride_status","not_riding","ride_with","");
+                                .update("ride_status", "not_riding", "ride_with", "");
 
                     }
                 });
@@ -527,65 +523,111 @@ public class Ride extends AppCompatActivity implements OnMapReadyCallback{
 
     }
 
-    public void setLayouts(){
+    public void setLayouts() {
 
         db.collection("riders").document(auth.getCurrentUser().getUid())
-            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                @Override
-                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-                    if(documentSnapshot.exists()){
-                        String ride_status = documentSnapshot.getString("ride_status");
-                        final String req_driver_id = documentSnapshot.getString("ride_with");
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        if (documentSnapshot.exists()) {
+                            String ride_status = documentSnapshot.getString("ride_status");
+                            final String req_driver_id = documentSnapshot.getString("ride_with");
 
-                        requested_to = req_driver_id;
+                            requested_to = req_driver_id;
 
-                        if(ride_status.equals("requested")){
-                            waitingForConfirmation.setVisibility(View.VISIBLE);
-                            listsLayout.setVisibility(View.GONE);
-                            ridingLayout.setVisibility(View.GONE);
-                        }else if(ride_status.equals("not_riding")){
-                            waitingForConfirmation.setVisibility(View.GONE);
-                            listsLayout.setVisibility(View.VISIBLE);
-                            ridingLayout.setVisibility(View.GONE);
-                        }else if(ride_status.equals("riding")){
+                            try{
+                                RideCompleted(req_driver_id);
+                            }catch (Exception e1){
 
-                            waitingForConfirmation.setVisibility(View.GONE);
-                            listsLayout.setVisibility(View.GONE);
+                            }
 
-                            db.collection("users").document(req_driver_id)
-                                .get()
-                                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (ride_status.equals("requested")) {
+                                waitingForConfirmation.setVisibility(View.VISIBLE);
+                                listsLayout.setVisibility(View.GONE);
+                                ridingLayout.setVisibility(View.GONE);
+                            } else if (ride_status.equals("not_riding")) {
+                                waitingForConfirmation.setVisibility(View.GONE);
+                                listsLayout.setVisibility(View.VISIBLE);
+                                ridingLayout.setVisibility(View.GONE);
+                            } else if (ride_status.equals("riding")) {
 
-                                        ridingWithName.setText(task.getResult().getString("name"));
+                                waitingForConfirmation.setVisibility(View.GONE);
+                                listsLayout.setVisibility(View.GONE);
 
-                                        db.collection("drivers").document(req_driver_id).get()
-                                            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                    db.collection("vehicles").document(req_driver_id).collection("vehicles").document(task.getResult().getString("driver_vehicle"))
-                                                        .get()
+                                SharedPreferences req = getApplicationContext().getSharedPreferences("requeststatus", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = req.edit();
+                                editor.putString("req_accepted","true");
+                                editor.commit();
+
+                                db.collection("users").document(req_driver_id)
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                                                ridingWithName.setText(task.getResult().getString("name"));
+
+                                                db.collection("drivers").document(req_driver_id).get()
                                                         .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                                             @Override
                                                             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                                db.collection("vehicles").document(req_driver_id).collection("vehicles").document(task.getResult().getString("driver_vehicle"))
+                                                                        .get()
+                                                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
 
-                                                                ridingVehicleName.setText(task.getResult().getString("vehicle_name"));
-                                                                ridingVehicleNumber.setText(task.getResult().getString("vehicle_number"));
-                                                                ridingLayout.setVisibility(View.VISIBLE);
+                                                                                ridingVehicleName.setText(task.getResult().getString("vehicle_name"));
+                                                                                ridingVehicleNumber.setText(task.getResult().getString("vehicle_number"));
+                                                                                ridingLayout.setVisibility(View.VISIBLE);
+                                                                            }
+                                                                        });
                                                             }
                                                         });
-                                                }
-                                            });
 
 
-                                    }
-                                });
-                            ridingLayout.setVisibility(View.GONE);
-                        }else{
+                                            }
+                                        });
+                                ridingLayout.setVisibility(View.GONE);
+                            } else {
 
+                            }
                         }
                     }
+                });
+    }
+
+    public void onPhoneClicked(View view) {
+        callingProgressBar.setVisibility(View.VISIBLE);
+        db.collection("users").document(requested_to).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + "+91"+task.getResult().getString("phone")));
+                        if (checkSelfPermission(Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(Ride.this, new String[]{Manifest.permission.CALL_PHONE},1);
+                            return;
+                        }else{
+                            startActivity(intent);
+                        }
+
+               }
+           });
+    }
+
+    public void RideCompleted(String id){
+        db.collection("ongoingrides").document(getRoomId(id,auth.getCurrentUser().getUid()))
+            .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                if(documentSnapshot.exists()){
+                    if(documentSnapshot.getBoolean("reached_destn") && documentSnapshot.getBoolean("pickup_confirmed")){
+
+                        rideCompleteLayout.setVisibility(View.VISIBLE);
+
+                    }
+                }
                 }
             });
     }

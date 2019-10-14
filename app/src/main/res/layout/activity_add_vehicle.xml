@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -30,7 +29,9 @@
                 android:layout_marginTop="15dp"
                 android:ems="10"
                 android:hint="Enter Vehicle Number"
-                android:inputType="text"
+                android:inputType="textCapCharacters
+
+"
                 android:padding="15dp"
                 android:textSize="14sp" />
 
@@ -52,7 +53,7 @@
                 android:layout_marginTop="15dp"
                 android:ems="10"
                 android:hint="License Number"
-                android:inputType="textPersonName"
+                android:inputType="textCapCharacters"
                 android:padding="15dp"
                 android:textSize="14sp"
                 android:visibility="visible" />
@@ -68,20 +69,6 @@
                 android:maxLines="1"
                 android:hint="How many seats your vehicle have ?"
                 android:inputType="number"
-                android:padding="15dp"
-                android:textSize="14sp" />
-
-            <EditText
-                android:id="@+id/mobileNumberInp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:digits="123467890"
-                android:ems="10"
-                android:hint="Mobile Number"
-                android:inputType="number"
-                android:maxLength="10"
-                android:maxLines="1"
                 android:padding="15dp"
                 android:textSize="14sp" />
 

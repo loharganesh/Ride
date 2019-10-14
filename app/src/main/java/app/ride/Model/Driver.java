@@ -4,9 +4,10 @@ import com.google.firebase.firestore.GeoPoint;
 
 public class Driver {
 
-    private String driver_key,driver_vehicle,drive_route_link;
+    private String driver_key,driver_vehicle,drive_route_link,vehicle_seats;
     private GeoPoint drive_from,drive_to;
     private long drive_fare;
+    private boolean busy;
 
 
     public Driver(){
@@ -37,6 +38,14 @@ public class Driver {
         this.drive_route_link = drive_route_link;
     }
 
+    public String getVehicle_seats() {
+        return vehicle_seats;
+    }
+
+    public void setVehicle_seats(String vehicle_seats) {
+        this.vehicle_seats = vehicle_seats;
+    }
+
     public GeoPoint getDrive_from() {
         return drive_from;
     }
@@ -59,5 +68,13 @@ public class Driver {
 
     public void setDrive_fare(long drive_fare) {
         this.drive_fare = drive_fare;
+    }
+
+    public boolean isBusy() {
+        return busy;
+    }
+
+    public void setBusy(boolean busy) {
+        this.busy = busy;
     }
 }

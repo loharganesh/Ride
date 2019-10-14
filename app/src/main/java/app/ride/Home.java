@@ -6,8 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -23,12 +21,16 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.Nullable;
 
 public class Home extends AppCompatActivity {
 
@@ -55,6 +57,8 @@ public class Home extends AppCompatActivity {
 
     private String location_name;
 
+    private LinearLayout mobileVerified;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,7 @@ public class Home extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        MobileVerified();
 
         selectRoleGrp = findViewById(R.id.selectRoleRadioBtn);
         continueBtn = findViewById(R.id.continueBtn);
@@ -72,6 +77,8 @@ public class Home extends AppCompatActivity {
 
         fromInp = findViewById(R.id.fromLocationInp);
         toInp = findViewById(R.id.toLocationInp);
+
+        mobileVerified = findViewById(R.id.mobileVerifiedLayout);
 
         fromLocationTxt = findViewById(R.id.fromLocationTxt);
         toLocationTxt = findViewById(R.id.toLocationTxt);
@@ -101,7 +108,7 @@ public class Home extends AppCompatActivity {
                     // find the radiobutton by returned id
                     radioButton = findViewById(selectedId);
 
-                    if (radioButton.getText().toString().equals("I want ride") && !TextUtils.isEmpty(from_location_str) && !TextUtils.isEmpty(to_location_str)) {
+                    if (radioButton.getText().toString().equals("RIDE") && !TextUtils.isEmpty(from_location_str) && !TextUtils.isEmpty(to_location_str)) {
 
                         progressBar.setVisibility(View.VISIBLE);
 
@@ -177,7 +184,7 @@ public class Home extends AppCompatActivity {
                         });
 
 
-                    } else if (radioButton.getText().toString().equals("I want to drive") && !TextUtils.isEmpty(from_location_str) && !TextUtils.isEmpty(to_location_str)) {
+                    } else if (radioButton.getText().toString().equals("DRIVE") && !TextUtils.isEmpty(from_location_str) && !TextUtils.isEmpty(to_location_str)) {
                         checkVehicles();
                     } else {
                         Toast.makeText(Home.this, "Select your role and location properly", Toast.LENGTH_SHORT).show();
@@ -190,6 +197,14 @@ public class Home extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    public void showProfile(View view){
+        startActivity(new Intent(this,Profile.class));
+    }
+    public void addMobile(View view){
+        startActivity(new Intent(this,VerifyMobile.class));
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -234,6 +249,20 @@ public class Home extends AppCompatActivity {
                                     .putExtra("origin_name",from_loc_name)
                                     .putExtra("destination_name",to_loc_name));
                             progressBar.setVisibility(View.INVISIBLE);
+                        }
+                    }
+                });
+    }
+
+    public void MobileVerified(){
+        db.collection("users").document(auth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        if(documentSnapshot.getString("phone").equals("")){
+                            mobileVerified.setVisibility(View.VISIBLE);
+                        }else{
+                            mobileVerified.setVisibility(View.GONE);
                         }
                     }
                 });

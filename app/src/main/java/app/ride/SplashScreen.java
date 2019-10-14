@@ -5,25 +5,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import app.ride.Auth.SignIn;
 
 public class SplashScreen extends AppCompatActivity {
 
     private FirebaseAuth auth;
-    private static int TIME_OUT = 2000;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -33,13 +26,6 @@ public class SplashScreen extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         final FirebaseUser currentUser = auth.getCurrentUser();
         updateUI(currentUser);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //updateUI(currentUser);
-            }
-        },TIME_OUT);
 
 
     }

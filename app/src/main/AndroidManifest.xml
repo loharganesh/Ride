@@ -13,7 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RecentActivities"></activity>
+
+
+
+        <activity android:name=".VerifyMobile"></activity>
+        <activity android:name=".Profile" />
+        <activity android:name=".RecentActivities" />
         <activity android:name=".ManageRide" />
         <activity android:name=".RideRequests" />
         <activity
@@ -52,8 +57,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Auth.SignIn"
-            android:theme="@style/SignUpTheme"/>
+        <activity
+            android:name=".Auth.SignIn"
+            android:theme="@style/SignUpTheme" />
     </application>
 
 </manifest>

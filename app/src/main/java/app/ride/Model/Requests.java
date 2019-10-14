@@ -1,20 +1,20 @@
 package app.ride.Model;
 
-import com.google.firebase.firestore.GeoPoint;
-
 public class Requests {
 
-    private String rider_name,rider_key,driver_key;
+    private String rider_name,rider_key,driver_key,destination,origin;
 
 
     public Requests(){
 
     }
 
-    public Requests(String rider_name, String rider_key, String driver_key) {
+    public Requests(String rider_name, String rider_key, String driver_key, String destination, String origin) {
         this.rider_name = rider_name;
         this.rider_key = rider_key;
         this.driver_key = driver_key;
+        this.destination = destination;
+        this.origin = origin;
     }
 
     public String getRider_name() {
@@ -39,5 +39,21 @@ public class Requests {
 
     public void setDriver_key(String driver_key) {
         this.driver_key = driver_key;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 }

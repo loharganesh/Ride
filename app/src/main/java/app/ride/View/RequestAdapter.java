@@ -13,16 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.ride.Constants;
 import app.ride.Model.Requests;
 import app.ride.R;
 
@@ -54,7 +51,11 @@ public class RequestAdapter extends RecyclerView.Adapter{
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
         final Requests requests = requestsList.get(position);
 
-        FirebaseFirestore.getInstance().collection("users").document(requests.getRider_key())
+
+
+        ((RequestsHolder)holder).location.setText("from "+requests.getOrigin()+" to "+requests.getDestination());
+
+        db.collection("users").document(requests.getRider_key())
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -69,7 +70,7 @@ public class RequestAdapter extends RecyclerView.Adapter{
             @Override
             public void onClick(View view) {
                 db.collection("drivers").document(auth.getCurrentUser().getUid())
-                .update("drive_status","driving","drive_for",requests.getRider_key());
+                .update("drive_status","driving","drive_for",requests.getRider_key(),"busy",true);
 
                 db.collection("riders").document(requests.getRider_key())
                         .update("ride_status","riding","ride_with",requests.getDriver_key());
@@ -98,13 +99,14 @@ public class RequestAdapter extends RecyclerView.Adapter{
         return requestsList.size();
     }
     public class RequestsHolder extends RecyclerView.ViewHolder {
-        private TextView riderName,fareAmount;
+        private TextView riderName,fareAmount,location;
         private Button acceptBtn;
         public RequestsHolder(View itemView) {
             super(itemView);
             riderName = itemView.findViewById(R.id.username);
             fareAmount = itemView.findViewById(R.id.fareAmount);
             acceptBtn = itemView.findViewById(R.id.acceptBtn);
+            location = itemView.findViewById(R.id.locationTxt);
         }
     }
 

@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.ride.Drive;
-import app.ride.Model.Driver;
 import app.ride.Model.Vehicle;
 import app.ride.R;
 import app.ride.SelectVehicle;
@@ -88,10 +85,12 @@ public class VehicleAdapter extends RecyclerView.Adapter{
                  driver.put("drive_from",from_location);
                  driver.put("drive_to",to_location);
                  driver.put("drive_for","");
+                 driver.put("vehicle_seats",vehicle.getVehicle_seats());
                  driver.put("origin",from_loc_name);
                  driver.put("destination",to_loc_name);
                  driver.put("drive_status","not_driving");
                  driver.put("drive_km",km);
+                 driver.put("busy",false);
                  driver.put("drive_fare",getPrice(km));
                  driver.put("drive_route_link",from_loc_lat+""+from_loc_long+""+to_loc_lat+""+to_loc_long);
 

@@ -1,9 +1,5 @@
 package app.ride;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,6 +11,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 public class AddVehicle extends AppCompatActivity {
 
-    private EditText v_name,v_number,v_license,v_seats,mobile_number;
+    private EditText v_name,v_number,v_license,v_seats;
     private Button continueBtn;
     private ProgressBar progressBar;
 
@@ -60,7 +60,6 @@ public class AddVehicle extends AppCompatActivity {
         v_name = findViewById(R.id.vehicleNameinp);
         v_number = findViewById(R.id.vehicleNumberInp);
         v_seats = findViewById(R.id.totalSeatsInp);
-        mobile_number = findViewById(R.id.mobileNumberInp);
         continueBtn = findViewById(R.id.continueBtn);
         progressBar = findViewById(R.id.uploadingBar);
 
@@ -83,7 +82,6 @@ public class AddVehicle extends AppCompatActivity {
         String v_seats_str = v_seats.getText().toString();
         String v_number_str = v_number.getText().toString();
 
-        String mobile_number_str = mobile_number.getText().toString();
 
         Map<String,Object> vehicle = new HashMap<>();
         vehicle.put("vehicle_name",v_name_str);
@@ -144,7 +142,7 @@ public class AddVehicle extends AppCompatActivity {
         String v_seats_str = v_seats.getText().toString();
         String v_number_str = v_number.getText().toString();
 
-        if(!TextUtils.isEmpty(v_name_str) && !TextUtils.isEmpty(v_license_str) && !TextUtils.isEmpty(v_seats_str) && !TextUtils.isEmpty(v_number_str) && !TextUtils.isEmpty(mobile_number.getText().toString())){
+        if(!TextUtils.isEmpty(v_name_str) && !TextUtils.isEmpty(v_license_str) && !TextUtils.isEmpty(v_seats_str) && !TextUtils.isEmpty(v_number_str)){
             valid = true;
         }else{
             valid = false;
@@ -163,12 +161,12 @@ public class AddVehicle extends AppCompatActivity {
         Matcher matcher = pattern.matcher(inputStr);
         if(matcher.matches())
         {
-            System.out.println("Validate licence Number");
+            //System.out.println("Validate licence Number");
             return true;
         }
         else
         {
-            System.out.println("Not Validated licence Number");
+            Toast.makeText(this, "Invalid Driving Licence Number", Toast.LENGTH_SHORT).show();
             return false;
 
         }
@@ -185,12 +183,12 @@ public class AddVehicle extends AppCompatActivity {
         Matcher matcher = pattern.matcher(inputStr);
         if(matcher.matches())
         {
-            System.out.println("Validate Vehicle num");
+            //System.out.println("Validate Vehicle num");
             return true;
         }
         else
         {
-            System.out.println("Not Validated vehicle num");
+            Toast.makeText(this, "Invalid Vehicle Number", Toast.LENGTH_SHORT).show();
             return false;
 
         }

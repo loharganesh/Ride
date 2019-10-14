@@ -1,13 +1,13 @@
 package app.ride;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -101,6 +101,12 @@ public class ManageRide extends AppCompatActivity {
                                 fareStatus.setTextColor(Color.BLACK);
                             }else{
                                 fareStatus.setTextColor(Color.LTGRAY);
+                            }
+
+                            if(documentSnapshot.getBoolean("reached_destn") && documentSnapshot.getBoolean("pickup_confirmed")){
+                                fareStatus.setTextColor(Color.BLACK);
+                                fareStatus.setText("Pay your fare");
+                                onBackPressed();
                             }
 
 

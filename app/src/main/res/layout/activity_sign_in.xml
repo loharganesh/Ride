@@ -87,20 +87,6 @@
                 android:visibility="invisible" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/policytxt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="15dp"
-            android:clickable="true"
-            android:gravity="center"
-            android:onClick="policyRead"
-            android:text="By signing in, i accept paybook privacy policy"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:visibility="gone" />
-
     </LinearLayout>
 
 </RelativeLayout>

@@ -118,7 +118,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_semibold"
-                            android:text="Ganesh Lohar"
+                            android:text="Loading..."
                             android:textColor="@color/white" />
 
                         <TextView
@@ -127,7 +127,8 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_light"
                             android:text="Katraj to Swargate"
-                            android:textColor="@color/white" />
+                            android:textColor="@color/white"
+                            android:visibility="gone" />
 
                     </LinearLayout>
 
